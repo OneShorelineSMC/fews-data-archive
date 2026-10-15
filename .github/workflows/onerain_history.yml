@@ -1,0 +1,49 @@
+name: OneRain history pull (test)
+
+# Reads past readings from OneRain's public sensor pages (no login, no export). Nothing is committed: the result
+# is a download on the run page. Start with one creek and a short range.
+on:
+  workflow_dispatch:
+    inputs:
+      select:
+        description: "Creek ids (belmont) or gauge keys (bel_stage), comma-separated; 'all' = every OneRain gauge"
+        default: "belmont"
+      start:
+        description: "First day (YYYY-MM-DD, Pacific)"
+        default: "2022-12-01"
+      end:
+        description: "Last day (YYYY-MM-DD, Pacific), inclusive"
+        default: "2023-01-31"
+      probe:
+        description: "Also check how far back the history goes (one day per year)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Pull
+        env:                      # inputs go in as plain values, never as shell code
+          SELECT: ${{ inputs.select }}
+          START: ${{ inputs.start }}
+          END: ${{ inputs.end }}
+          PROBE: ${{ inputs.probe }}
+        run: |
+          EXTRA=""
+          if [ "$PROBE" = "true" ]; then EXTRA="--probe"; fi
+          python scripts/pull_onerain_history.py --select "$SELECT" --start "$START" --end "$END" $EXTRA
+          cat out/onerain_history/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()              # keep whatever was read, even if the run stopped early
+        with:
+          name: onerain-history-${{ inputs.select }}-${{ inputs.start }}-to-${{ inputs.end }}
+          path: out/onerain_history/
