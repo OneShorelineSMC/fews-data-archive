@@ -1,10 +1,10 @@
 # OneShoreline FEWS data archive
 
 A permanent record of what the Flood Early Warning System measured and showed. The live site
-([oneshorelinefews](https://github.com/OneShorelineSMC/oneshorelinefews)) only keeps the last 48 hours. This repo
+([oneshorelinefews](https://github.com/OneShorelineSMC/oneshorelinefews)) only keeps the last 7 days. This repo
 keeps everything, flags events, and can stitch any period back together.
 
-It only **reads** from the live site (its published `creeks.json`) and from NOAA. Nothing here can affect the
+It only **reads** from the live site (its published `creeks.json` and `creeks_7day.json`) and from NOAA. Nothing here can affect the
 website, the kiosk or the data job.
 
 > **Data status.** Everything here is **provisional**, as the agencies published it at the time, and has **not
@@ -42,8 +42,10 @@ website, the kiosk or the data job.
 6. **Health check.** A run **fails, and GitHub emails the repo admins**, if the live data is more than 6 hours old
    or nothing could be read. It still saves whatever it did get first. A NOAA outage alone only adds a warning.
    Problems are logged in `meta/runs.csv`.
-7. **No gaps from a missed run.** The archive runs twice a day and re-reads the last two days each time, because
-   the live site keeps only 48 hours. One failed run loses nothing.
+7. **No gaps from a missed run.** The archive runs twice a day and re-reads the live site's rolling 7-day file
+   (`creeks_7day.json`) plus `creeks.json` each time, so several days of failed runs lose nothing.
+8. **Times from the source.** The live site publishes each reading's UTC time, so the repeated hour when daylight
+   saving ends is never guessed.
 
 ### Raw file columns
 
@@ -54,14 +56,14 @@ website, the kiosk or the data job.
 | `kind` | `stage`, `rain_increment`, `tide_measured`, `tide_predicted` |
 | `datetime_utc` | Time of the reading, UTC (`2026-12-01T08:15Z`) |
 | `datetime_local` | Pacific clock time (PST/PDT) |
-| `time_flag` | blank, `dst_repeated_hour`, or `dst_skipped_hour` |
+| `time_flag` | blank, or `dst_repeated_hour` (the Pacific time occurs twice on the day daylight saving ends; `datetime_utc` tells them apart) |
 | `value` | As published |
 | `unit` | `ft` (gauge datum), `in`, `ft NAVD88` (tides) |
-| `quality` | `provisional` (OneRain, USGS via the live site), `preliminary` / `verified` (NOAA measured), `predicted` |
-| `source_qualifier` | The agency's own codes, unchanged. NOAA: `q=` quality, `f=` flags, `s=` sigma |
+| `quality` | `provisional` (OneRain; USGS until approved), `approved` (USGS `A`), `preliminary` / `verified` (NOAA measured), `predicted` |
+| `source_qualifier` | The agency's own codes, unchanged. USGS: `P` provisional, `A` approved, `e` estimated, `Eqp` equipment malfunction, etc. NOAA: `q=` quality, `f=` flags, `s=` sigma |
 | `source` | `onerain`, `usgs`, `noaa` |
 | `source_id` | Station and sensor: `onerain 41104 site_id=2 device_id=4`, `usgs 11162753 00065`, `noaa 9414523 water_level Redwood City` |
-| `via` | How it was retrieved: `fews creeks.json` or `noaa api` |
+| `via` | How it was retrieved: `fews creeks_7day.json`, `fews creeks.json` or `noaa api` |
 | `retrieved_utc` | When this archive read it (to the second). Orders versions |
 
 ## Getting data out: Stitch data
@@ -119,7 +121,10 @@ the repo active, but if you get an email saying a workflow was disabled, re-enab
 ## Setup (once)
 
 1. Create the repo `OneShorelineSMC/fews-data-archive` as **Public** and upload these files, keeping the folders.
-2. **Settings → Actions → General → Workflow permissions → Read and write permissions → Save.**
+2. Nothing to change under Workflow permissions: the archive and status workflows ask for write access themselves
+   (`permissions: contents: write`). If that setting is grayed out, the organization controls it, which is fine.
+   Only if a run fails at "Commit" with a 403 / "Permission denied to github-actions[bot]" does an organization
+   owner need to allow it: **Organization Settings → Actions → General → Workflow permissions**.
 3. **Actions** tab → enable workflows if asked → run **Daily archive and events** once, then **Status log** once.
 4. Make sure repo admins have GitHub email notifications on for failed workflow runs (the health check).
 
