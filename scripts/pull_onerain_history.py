@@ -8,7 +8,7 @@ nothing is silently cut off.
     python scripts/pull_onerain_history.py --select belmont --start 2022-12-01 --end 2023-01-31 --probe
 
 --select  creek ids (belmont) or gauge keys (bel_stage), comma-separated; 'all' = every OneRain gauge
---probe   also check how far back each sensor's history goes (one day in January of each year)
+--probe   also check how far back each sensor's history goes (one request per year)
 
 Output (out/onerain_history/):
   <gauge>.csv  datetime_utc, datetime_local, time_flag, value (exactly as shown on the page), unit
@@ -44,6 +44,8 @@ HEADERS = {
 STAMP = r"(\d{4}-\d\d-\d\d \d\d:\d\d(?::\d\d)?)"
 NUMBER = r"(-?\d+(?:\.\d+)?)"
 MAX_PAGES = 40          # pages per request before we call the piece "too big" and split it
+CAP_READINGS = 190      # OneRain's public pages stop at 200 readings per request, silently (no "more" link).
+                        # A piece that returns this many may be cut off, so it is split and re-read.
 PAUSE_S = 1.0           # between requests, to be polite to OneRain
 PIECE_DAYS = 7
 MIN_PIECE = dt.timedelta(hours=3)
@@ -163,7 +165,7 @@ def read_piece(session, g, start, end):
         if (desc and min(t for t, _ in batch) < start) or (not desc and max(t for t, _ in batch) >= end):
             break
         url = next_page(page)
-    return readings, pages, True, unit
+    return readings, pages, len(readings) < CAP_READINGS, unit
 
 
 def read_range(session, g, start, end, log):
@@ -189,12 +191,12 @@ def read_range(session, g, start, end, log):
 
 
 def probe(session, g, years):
-    """Readings on Jan 15 of each year: shows how far back the public pages go."""
+    """One request per calendar year (first page only): does the public page have any readings that year?"""
     res = []
     for y in years:
-        a = dt.datetime(y, 1, 15)
-        r, _, _, _ = read_piece(session, g, a, a + dt.timedelta(days=1))
-        res.append((y, len(r)))
+        page = session.get(sensor_page(g, dt.datetime(y, 1, 1), dt.datetime(y + 1, 1, 1)))
+        batch, _ = parse_readings(page)
+        res.append((y, len(batch)))
     return res
 
 
@@ -247,7 +249,7 @@ def main():
         f.write("## Readings\n\n| Gauge | Type | Readings | First | Last | Unit | Silences > 13 h |\n|---|---|---|---|---|---|---|\n")
         f.write("\n".join(summary) + "\n\n")
         if reach:
-            f.write("## How far back (readings on Jan 15 of each year)\n\n| Gauge | " + " | ".join(map(str, years))
+            f.write("## How far back (readings found in each year; first page only, so 100 = 'plenty')\n\n| Gauge | " + " | ".join(map(str, years))
                     + " |\n|---|" + "---|" * len(years) + "\n" + "\n".join(reach) + "\n\n")
         f.write("## Pieces read\n\n| Gauge | Range | Pages | Result |\n|---|---|---|---|\n" + "\n".join(log) + "\n")
     print(open(os.path.join(OUT, "report.md")).read())
