@@ -11,8 +11,12 @@ Also maintains:
 Health check: the run FAILS (so GitHub emails the repo admins) if the live data is older than STALE_HOURS or if
 nothing could be read, after saving whatever it did get.
 
-Usage:  python scripts/archive_day.py            # the last 2 complete days + today
-        python scripts/archive_day.py --days 6   # if the live site publishes a longer window
+Readings come from creeks_7day.json (the live site's rolling 7-day file) and creeks.json (48 h, plus all the
+creek metadata). Both are read and merged, so either one alone is enough. Each point is
+["Pacific time", value, "UTC time"] and, for USGS gauges, a 4th element with USGS's qualifier codes (P, A, e, Eqp).
+
+Usage:  python scripts/archive_day.py            # the last 7 complete days + today
+        python scripts/archive_day.py --days 2
 """
 
 import argparse
@@ -22,7 +26,7 @@ import os
 import sys
 import urllib.parse
 
-from common import (CREEKS_URL, NOAA, PT, ROOT, TIDE_STATIONS, UTC, append_csv, code_version, fmt_local, fmt_utc,
+from common import (CREEKS_7DAY_URL, CREEKS_URL, NOAA, PT, ROOT, TIDE_STATIONS, UTC, append_csv, code_version, fmt_local, fmt_utc,
                     http_get, local_series_to_utc, merge_versions, now_utc, raw_path, read_raw, short_hash,
                     write_raw)
 
@@ -39,7 +43,8 @@ def source_id_of(s, src):
     return f"onerain {s.get('number', '')} site_id={sid} device_id={dev}".strip()
 
 
-def creek_rows(cj_exact, cj, retrieved):
+def creek_rows(sources, cj, retrieved):
+    """sources: [(via, exact-parsed document)], creeks.json first. cj: creeks.json parsed (metadata)."""
     meta = {}
     for c in cj.get("creeks", []) + cj.get("creeks_preview", []):
         for role in ("stages", "rain", "rain_support"):
@@ -54,24 +59,30 @@ def creek_rows(cj_exact, cj, retrieved):
         for t in c.get("rain_triggers", []):
             meta.setdefault(t["gauge"], {}).setdefault("rain_triggers", []).append(t)
     rows = []
-    for key, s in cj_exact.get("sensors", {}).items():
-        sp = cj["sensors"][key]
-        m = meta.setdefault(key, {"source": "onerain", "source_id": "onerain"})
-        m.update(name=sp.get("name"), kind=sp.get("kind"), unit=sp.get("unit"),
-                 freq=(sp.get("signals") or {}).get("freq"))
-        pts = [p for p in s.get("points", []) if p and p[1] is not None]
-        # a point may carry its own UTC time as a 3rd element, or its local time with an offset (if the site publishes it)
-        times = local_series_to_utc([p[0] for p in pts])
-        for p, (u, flag) in zip(pts, times):
-            if len(p) > 2 and isinstance(p[2], str) and p[2].endswith("Z"):
-                u, flag = dt.datetime.fromisoformat(p[2].replace("Z", "+00:00")), ""
-            elif len(p[0]) > 16 and p[0][16:17] in "+-Z":           # local time published with its offset
-                u, flag = dt.datetime.fromisoformat(p[0].replace(" ", "T").replace("Z", "+00:00")), ""
-            rows.append({"sensor": key, "creek": m.get("creek", ""), "kind": sp.get("kind"),
-                         "datetime_utc": fmt_utc(u), "datetime_local": fmt_local(u), "time_flag": flag,
-                         "value": p[1], "unit": sp.get("unit", ""), "quality": "provisional",
-                         "source_qualifier": "", "source": m["source"], "source_id": m["source_id"],
-                         "via": "fews creeks.json", "retrieved_utc": retrieved})
+    for via, doc in sources:
+        for key, s in doc.get("sensors", {}).items():
+            sp = cj.get("sensors", {}).get(key) or s
+            m = meta.setdefault(key, {"source": "onerain", "source_id": "onerain"})
+            m.update(name=sp.get("name"), kind=sp.get("kind"), unit=sp.get("unit"),
+                     freq=(sp.get("signals") or {}).get("freq"))
+            pts = [p for p in s.get("points", []) if p and len(p) > 1 and p[1] is not None]
+            times = local_series_to_utc([p[0][:16] for p in pts])   # fallback only, if a point has no UTC time
+            for p, (u, flag) in zip(pts, times):
+                if len(p) > 2 and isinstance(p[2], str) and p[2].endswith("Z"):        # UTC published by the site
+                    u, flag = dt.datetime.fromisoformat(p[2].replace("Z", "+00:00")), ""
+                elif len(p[0]) > 16 and p[0][16:17] in "+-Z":                         # local time with offset
+                    u, flag = dt.datetime.fromisoformat(p[0].replace(" ", "T").replace("Z", "+00:00")), ""
+                if not flag:                     # UTC is exact, but readers of datetime_local should know
+                    loc = u.astimezone(PT).replace(tzinfo=None)
+                    if loc.replace(tzinfo=PT, fold=0).utcoffset() != loc.replace(tzinfo=PT, fold=1).utcoffset():
+                        flag = "dst_repeated_hour"
+                qual = str(p[3]).strip() if len(p) > 3 and p[3] is not None else ""
+                quality = "approved" if qual.split()[:1] == ["A"] else "provisional"
+                rows.append({"sensor": key, "creek": m.get("creek", ""), "kind": sp.get("kind"),
+                             "datetime_utc": fmt_utc(u), "datetime_local": fmt_local(u), "time_flag": flag,
+                             "value": p[1], "unit": sp.get("unit", ""), "quality": quality,
+                             "source_qualifier": qual, "source": m["source"], "source_id": m["source_id"],
+                             "via": via, "retrieved_utc": retrieved})
     return rows, meta
 
 
@@ -138,7 +149,7 @@ def log_source_changes(meta, retrieved):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--days", type=int, default=2, help="complete days back to save, plus today")
+    ap.add_argument("--days", type=int, default=7, help="complete days back to save, plus today")
     ap.add_argument("--no-tides", action="store_true")
     a = ap.parse_args()
 
@@ -147,14 +158,26 @@ def main():
     days = [today - dt.timedelta(days=i) for i in range(a.days, -1, -1)]
     start_utc = dt.datetime.combine(days[0], dt.time(0), PT).astimezone(UTC)
 
-    problems, rows, meta, generated = [], [], {}, ""
-    try:
-        txt = http_get(CREEKS_URL)
-        cj, cj_exact = json.loads(txt), json.loads(txt, parse_float=str, parse_int=str)
-        generated = cj.get("generated", "")
-        rows, meta = creek_rows(cj_exact, cj, retrieved)
-    except Exception as e:
-        problems.append(f"creeks.json: {e}")
+    problems, rows, meta, generated, generated_utc = [], [], {}, "", ""
+    docs, cj = [], {}
+    for via, url in (("fews creeks.json", CREEKS_URL), ("fews creeks_7day.json", CREEKS_7DAY_URL)):
+        try:
+            txt = http_get(url)
+            docs.append((via, json.loads(txt, parse_float=str, parse_int=str)))
+            if via == "fews creeks.json":
+                cj = json.loads(txt)
+        except Exception as e:
+            problems.append(f"{via}: {e}")
+    if docs:
+        head = cj or json.loads(json.dumps(docs[0][1]))
+        generated = head.get("generated", "")
+        generated_utc = head.get("generated_utc", "")
+        rows, meta = creek_rows(docs, cj, retrieved)
+        # the same reading appears in both files: keep one copy
+        uniq = {}
+        for r in rows:
+            uniq[(r["sensor"], r["datetime_utc"], str(r["value"]), r["source_qualifier"])] = r
+        rows = list(uniq.values())
     if not a.no_tides:
         trows, tp = tide_rows(start_utc, now_utc(), retrieved)
         rows += trows
@@ -179,7 +202,7 @@ def main():
         added_total += len(added)
         print(f"{d}: {len(merged):6d} rows, {len(added)} added ({revised} revised values)")
 
-    if meta:
+    if meta and cj:                      # metadata only from creeks.json, never from the 7-day file alone
         os.makedirs(os.path.join(ROOT, "meta"), exist_ok=True)
         with open(os.path.join(ROOT, "meta", "sensors.json"), "w") as f:
             json.dump({"updated": generated, "sensors": meta}, f, indent=1, sort_keys=True)
@@ -188,9 +211,10 @@ def main():
             print(f"meta/sources.csv: {len(changes)} sensor(s) new or changed")
 
     stale = ""
-    if generated:
-        g = dt.datetime.strptime(generated[:16], "%Y-%m-%d %H:%M").replace(tzinfo=PT)
-        age = (dt.datetime.now(PT) - g).total_seconds() / 3600
+    if generated_utc or generated:
+        g = (dt.datetime.fromisoformat(generated_utc.replace("Z", "+00:00")) if generated_utc
+             else dt.datetime.strptime(generated[:16], "%Y-%m-%d %H:%M").replace(tzinfo=PT))
+        age = (dt.datetime.now(UTC) - g).total_seconds() / 3600
         if age > STALE_HOURS:
             stale = f"live data is {age:.0f} h old (generated {generated})"
     append_csv(os.path.join(ROOT, "meta", "runs.csv"),

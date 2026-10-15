@@ -12,6 +12,7 @@ Integrity rules this module enforces:
 
 import csv
 import datetime as dt
+import decimal
 import gzip
 import hashlib
 import io
@@ -29,6 +30,8 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 CREEKS_URL = os.environ.get(
     "CREEKS_URL", "https://raw.githubusercontent.com/OneShorelineSMC/oneshorelinefews/data/creeks.json")
+CREEKS_7DAY_URL = os.environ.get(
+    "CREEKS_7DAY_URL", "https://raw.githubusercontent.com/OneShorelineSMC/oneshorelinefews/data/creeks_7day.json")
 NOAA = "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter"
 TIDE_STATIONS = {"9414523": "Redwood City", "9414750": "Alameda"}
 
@@ -116,15 +119,29 @@ def read_raw(day):
         return list(csv.DictReader(f))
 
 
+def _same(field, v):
+    """For comparing versions only: 0.1 and 0.10 are the same value (the stored text is never changed)."""
+    if field == "value":
+        try:
+            return str(decimal.Decimal(v).normalize())
+        except (decimal.InvalidOperation, ValueError):
+            return v
+    return v
+
+
+def version_of(r):
+    return tuple(_same(k, r.get(k, "")) for k in VERSION_KEY)
+
+
 def merge_versions(old, new):
     """Append-only merge: keep every old row; add a new row only if it is a new version of that reading."""
     seen = {}
     for r in old:
-        seen.setdefault((r["sensor"], r["datetime_utc"]), set()).add(tuple(r.get(k, "") for k in VERSION_KEY))
+        seen.setdefault((r["sensor"], r["datetime_utc"]), set()).add(version_of(r))
     added = []
     for r in new:
         k = (r["sensor"], r["datetime_utc"])
-        v = tuple(r.get(x, "") for x in VERSION_KEY)
+        v = version_of(r)
         if v not in seen.setdefault(k, set()):
             seen[k].add(v)
             added.append(r)
