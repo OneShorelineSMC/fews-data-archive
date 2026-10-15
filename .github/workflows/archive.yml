@@ -1,7 +1,7 @@
 name: Daily archive and events
 
-# Twice a day (about 3:15 AM and 3:15 PM Pacific): save the last two days of readings and tides, then rebuild the
-# event log. Twice, because the live site only keeps 48 hours: one missed run must never lose data.
+# Twice a day (about 3:15 AM and 3:15 PM Pacific): save the last seven days of readings (from the live site's
+# creeks_7day.json and creeks.json) and tides, then rebuild the event log. Several missed runs lose nothing.
 # The run FAILS (and GitHub emails) if the live data is stale or nothing could be read.
 on:
   schedule:
@@ -9,8 +9,8 @@ on:
   workflow_dispatch:
     inputs:
       days:
-        description: "Complete days back to (re)save (creeks.json holds about 2)"
-        default: "2"
+        description: "Complete days back to (re)save (creeks_7day.json holds 7)"
+        default: "7"
 
 permissions:
   contents: write
@@ -30,7 +30,7 @@ jobs:
           python-version: "3.12"
       - name: Save readings and tides
         env:
-          DAYS: ${{ inputs.days || '2' }}
+          DAYS: ${{ inputs.days || '7' }}
         run: python scripts/archive_day.py --days "$DAYS"
       - name: Rebuild event log
         if: always()            # still rebuild and save what was archived, even if the health check failed
