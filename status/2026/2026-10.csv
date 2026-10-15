@@ -1,0 +1,11 @@
+datetime_local,creek,preview,status,level,level_name,trigger,rain_level,rain_driver,rising_fast,trend_ft_per_hr,tide,reasons,staff_notes,changed,code_version
+2026-10-15 09:10,colma,no,none,0,,,0,,no,0.01,,,,first record,5643537bf3
+2026-10-15 09:10,sanbruno,no,offline,0,,,0,,no,,"{""ft"":3.83,""source"":""measured"",""rising"":false,""next_high"":""2026-10-15 14:51"",""next_high_ft"":5.92,""high_soon"":false}",,,first record,5643537bf3
+2026-10-15 09:10,belmont,no,none,0,,,0,,no,0.0,,,only one working rain gauge,first record,5643537bf3
+2026-10-15 09:10,atherton,no,none,0,,,0,,no,0.0,,,only one working rain gauge,first record,5643537bf3
+2026-10-15 09:10,sanfrancisquito,yes,none,0,,,0,,no,0.0,,,,first record,5643537bf3
+2026-10-15 09:10,sanmateo,yes,none,0,,,0,,no,0.04,,,only one working rain gauge,first record,5643537bf3
+2026-10-15 09:10,greenhills,yes,none,0,,,0,,no,0.0,,,only one working rain gauge,first record,5643537bf3
+2026-10-15 09:10,pilarcitos,yes,none,0,,,0,,no,0.0,,,only one working rain gauge,first record,5643537bf3
+2026-10-15 09:10,sangregorio,yes,none,0,,,0,,no,0.0,,,only one working rain gauge,first record,5643537bf3
+2026-10-15 09:10,pescadero,yes,none,0,,,0,,no,0.0,,,only one working rain gauge,first record,5643537bf3

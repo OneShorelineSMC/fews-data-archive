@@ -1,0 +1,72 @@
+{
+ "atherton": {
+  "level": 0,
+  "rain_level": 0,
+  "rising_fast": "no",
+  "status": "none",
+  "trigger": ""
+ },
+ "belmont": {
+  "level": 0,
+  "rain_level": 0,
+  "rising_fast": "no",
+  "status": "none",
+  "trigger": ""
+ },
+ "colma": {
+  "level": 0,
+  "rain_level": 0,
+  "rising_fast": "no",
+  "status": "none",
+  "trigger": ""
+ },
+ "greenhills": {
+  "level": 0,
+  "rain_level": 0,
+  "rising_fast": "no",
+  "status": "none",
+  "trigger": ""
+ },
+ "pescadero": {
+  "level": 0,
+  "rain_level": 0,
+  "rising_fast": "no",
+  "status": "none",
+  "trigger": ""
+ },
+ "pilarcitos": {
+  "level": 0,
+  "rain_level": 0,
+  "rising_fast": "no",
+  "status": "none",
+  "trigger": ""
+ },
+ "sanbruno": {
+  "level": 0,
+  "rain_level": 0,
+  "rising_fast": "no",
+  "status": "offline",
+  "trigger": ""
+ },
+ "sanfrancisquito": {
+  "level": 0,
+  "rain_level": 0,
+  "rising_fast": "no",
+  "status": "none",
+  "trigger": ""
+ },
+ "sangregorio": {
+  "level": 0,
+  "rain_level": 0,
+  "rising_fast": "no",
+  "status": "none",
+  "trigger": ""
+ },
+ "sanmateo": {
+  "level": 0,
+  "rain_level": 0,
+  "rising_fast": "no",
+  "status": "none",
+  "trigger": ""
+ }
+}
