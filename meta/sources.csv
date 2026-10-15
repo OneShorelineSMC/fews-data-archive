@@ -1,0 +1,30 @@
+changed_utc,sensor,creek,kind,unit,source,source_id,label,number,thresholds_hash,storm_sizes_hash,change
+2026-10-15T16:15:12Z,ath_alameda,atherton,stage,ft,onerain,onerain 41107 site_id=48 device_id=5,Alameda de las Pulgas,41107,604b358117,74234e98af,first record
+2026-10-15T16:15:12Z,ath_caltrain,atherton,stage,ft,onerain,onerain 41106 site_id=14 device_id=4,Upstream of Caltrain,41106,1f07f1c99e,74234e98af,first record
+2026-10-15T16:15:12Z,ath_rain,atherton,rain_increment,in,onerain,onerain 41106 site_id=14 device_id=3,Caltrain,41106,d09bea4ca0,001bc995ba,first record
+2026-10-15T16:15:12Z,bel_rain,belmont,rain_increment,in,onerain,onerain 41104 site_id=2 device_id=4,Old County Road,41104,73ad5fe98c,f6e03a49d9,first record
+2026-10-15T16:15:12Z,bel_stage,belmont,stage,ft,onerain,onerain 41104 site_id=2 device_id=1,Old County Road,41104,a819aaa5c0,74234e98af,first record
+2026-10-15T16:15:12Z,col_rain,colma,rain_increment,in,onerain,onerain 41101 site_id=12 device_id=4,Orange Memorial Park,41101,d09bea4ca0,febc872bfb,first record
+2026-10-15T16:15:12Z,col_rain_41200,colma,rain_increment,in,onerain,onerain 41200 site_id=3 device_id=2,San Bruno Mountain,41200,d09bea4ca0,5eace98eb9,first record
+2026-10-15T16:15:12Z,col_stage,colma,stage,ft,onerain,onerain 41101 site_id=12 device_id=5,Orange Memorial Park,41101,3871eea4fd,74234e98af,first record
+2026-10-15T16:15:12Z,gh_rain_pld,greenhills,rain_increment,in,onerain,onerain PLD site_id=20 device_id=2,Pilarcitos Dam,PLD,d09bea4ca0,099d95c3b1,first record
+2026-10-15T16:15:12Z,gh_stage_41201,greenhills,stage,ft,onerain,onerain 41201 site_id=47 device_id=1,Green Hills Country Club,41201,d09bea4ca0,74234e98af,first record
+2026-10-15T16:15:12Z,pes_rain_lah,pescadero,rain_increment,in,onerain,onerain LAH site_id=26 device_id=2,La Honda,LAH,d09bea4ca0,bcc8b4b08f,first record
+2026-10-15T16:15:12Z,pes_stage_11162500,pescadero,stage,ft,usgs,usgs 11162500 00065,Near Pescadero,USGS 11162500,d09bea4ca0,74234e98af,first record
+2026-10-15T16:15:12Z,pes_stage_41151,pescadero,stage,ft,onerain,onerain 41151 site_id=28 device_id=1,Stage Road,41151,d09bea4ca0,74234e98af,first record
+2026-10-15T16:15:12Z,pil_rain_pld,pilarcitos,rain_increment,in,onerain,onerain PLD site_id=20 device_id=2,Pilarcitos Dam,PLD,d09bea4ca0,099d95c3b1,first record
+2026-10-15T16:15:12Z,pil_stage_111626182,pilarcitos,stage,ft,usgs,usgs 111626182 00065,Below Pilarcitos Lake Spillway,USGS 111626182,d09bea4ca0,74234e98af,first record
+2026-10-15T16:15:12Z,pil_stage_11162619,pilarcitos,stage,ft,usgs,usgs 11162619 00065,Above Stone Dam,USGS 11162619,d09bea4ca0,74234e98af,first record
+2026-10-15T16:15:12Z,pil_stage_11162620,pilarcitos,stage,ft,usgs,usgs 11162620 00065,Below Stone Dam,USGS 11162620,d09bea4ca0,74234e98af,first record
+2026-10-15T16:15:12Z,pil_stage_11162630,pilarcitos,stage,ft,usgs,usgs 11162630 00065,Half Moon Bay,USGS 11162630,d09bea4ca0,74234e98af,first record
+2026-10-15T16:15:12Z,rain_first_ave,sanbruno,rain_increment,in,onerain,onerain 41102 site_id=11 device_id=5,First Avenue,41102,d09bea4ca0,553f305135,first record
+2026-10-15T16:15:12Z,rain_mountain,sanbruno,rain_increment,in,onerain,onerain 41200 site_id=3 device_id=2,San Bruno Mountain,41200,d09bea4ca0,5eace98eb9,first record
+2026-10-15T16:15:12Z,sfq_rain_a08204fe,sanfrancisquito,rain_increment,in,onerain,onerain A08204FE site_id=44 device_id=2,Trappers Trail (Valley Water),A08204FE,d09bea4ca0,4a56b09386,first record
+2026-10-15T16:15:12Z,sfq_rain_a08363e2,sanfrancisquito,rain_increment,in,onerain,onerain A08363E2 site_id=10 device_id=3,Wunderlich County Park,A08363E2,d09bea4ca0,81919978d1,first record
+2026-10-15T16:15:12Z,sfq_rain_a0839db4,sanfrancisquito,rain_increment,in,onerain,onerain A0839DB4 site_id=9 device_id=3,Windy Hill Open Space Preserve,A0839DB4,d09bea4ca0,fee12c4b1b,first record
+2026-10-15T16:15:12Z,sfq_stage_11164500,sanfrancisquito,stage,ft,usgs,usgs 11164500 00065,Stanford,USGS 11164500,d09bea4ca0,74234e98af,first record
+2026-10-15T16:15:12Z,sg_rain_lah,sangregorio,rain_increment,in,onerain,onerain LAH site_id=26 device_id=2,La Honda,LAH,d09bea4ca0,bcc8b4b08f,first record
+2026-10-15T16:15:12Z,sg_stage_11162570,sangregorio,stage,ft,usgs,usgs 11162570 00065,San Gregorio,USGS 11162570,d09bea4ca0,74234e98af,first record
+2026-10-15T16:15:12Z,smc_rain_csc,sanmateo,rain_increment,in,onerain,onerain CSC site_id=18 device_id=2,Crystal Springs Cottage,CSC,d09bea4ca0,207257a093,first record
+2026-10-15T16:15:12Z,smc_stage_11162753,sanmateo,stage,ft,usgs,usgs 11162753 00065,Below Crystal Springs Reservoir,USGS 11162753,d09bea4ca0,74234e98af,first record
+2026-10-15T16:15:12Z,stage,sanbruno,stage,ft,onerain,onerain 41102 site_id=11 device_id=3,First Avenue,41102,7838114350,74234e98af,first record
