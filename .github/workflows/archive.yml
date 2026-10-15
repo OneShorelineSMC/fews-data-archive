@@ -1,0 +1,47 @@
+name: Daily archive and events
+
+# Twice a day (about 3:15 AM and 3:15 PM Pacific): save the last two days of readings and tides, then rebuild the
+# event log. Twice, because the live site only keeps 48 hours: one missed run must never lose data.
+# The run FAILS (and GitHub emails) if the live data is stale or nothing could be read.
+on:
+  schedule:
+    - cron: "17 10,22 * * *"
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "Complete days back to (re)save (creeks.json holds about 2)"
+        default: "2"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: archive-writes      # never two jobs committing at once
+  cancel-in-progress: false
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Save readings and tides
+        env:
+          DAYS: ${{ inputs.days || '2' }}
+        run: python scripts/archive_day.py --days "$DAYS"
+      - name: Rebuild event log
+        if: always()            # still rebuild and save what was archived, even if the health check failed
+        run: python scripts/find_events.py
+      - name: Commit if anything changed
+        if: always()
+        run: |
+          git config user.name  "fews-archive-bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add raw meta events
+          if git diff --cached --quiet; then echo "Nothing new."; exit 0; fi
+          git commit -m "Archive $(TZ=America/Los_Angeles date +%Y-%m-%d)"
+          git pull --rebase --quiet
+          git push

@@ -1,0 +1,53 @@
+name: Stitch data (download a period of record)
+
+on:
+  workflow_dispatch:
+    inputs:
+      start:
+        description: "First day (YYYY-MM-DD, Pacific)"
+        required: true
+      end:
+        description: "Last day (YYYY-MM-DD, Pacific), inclusive"
+        required: true
+      select:
+        description: "Creeks (belmont), sensors (bel_stage), tide_9414523, or all — comma-separated"
+        default: "all"
+      step:
+        description: "Time step in minutes (e.g. 15); 0 = every reading as recorded"
+        default: "15"
+      excel:
+        description: "Also make an Excel file (one sheet per creek)"
+        type: boolean
+        default: true
+      all_versions:
+        description: "Include every archived version (revisions); needs time step 0"
+        type: boolean
+        default: false
+
+jobs:
+  stitch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install openpyxl
+      - name: Stitch
+        env:                      # inputs go in as plain values, never as shell code
+          START: ${{ inputs.start }}
+          END: ${{ inputs.end }}
+          SELECT: ${{ inputs.select }}
+          STEP: ${{ inputs.step }}
+          EXCEL: ${{ inputs.excel }}
+          ALLV: ${{ inputs.all_versions }}
+        run: |
+          EXTRA=""
+          if [ "$EXCEL" = "true" ]; then EXTRA="--excel"; fi
+          if [ "$ALLV" = "true" ]; then EXTRA="$EXTRA --versions all"; fi
+          python scripts/stitch.py --start "$START" --end "$END" --select "$SELECT" --step "$STEP" $EXTRA
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stitched-${{ inputs.start }}-to-${{ inputs.end }}
+          path: out/
