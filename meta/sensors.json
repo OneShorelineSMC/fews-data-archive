@@ -1586,6 +1586,44 @@
    "unit": "in",
    "url": "https://oneshorelineearlywarning.onerain.com/sensor/?site_id=3&site=e5d4db4f-0a98-4825-aa98-fa327ed9cfa8&device_id=2&device=2a34c20c-eb4e-4337-801c-5341296fcb30"
   },
+  "sb_stage_41102": {
+   "creek": "sanbruno",
+   "creek_name": "San Bruno Creek",
+   "freq": null,
+   "kind": "stage",
+   "label": "First Avenue",
+   "name": "San Bruno Creek at First Avenue (41102) \u2013 Stage",
+   "number": "41102",
+   "preview": false,
+   "reports": "on change",
+   "role": "stages",
+   "source": "onerain",
+   "source_id": "onerain 41102 site_id=11 device_id=3",
+   "thresholds": [
+    {
+     "color": "#e6c200",
+     "level": 1,
+     "name": "Flood Monitoring",
+     "value": 2.4
+    },
+    {
+     "color": "#e07b00",
+     "level": 2,
+     "name": "Flood Watch",
+     "value": 3.6
+    },
+    {
+     "color": "#c62828",
+     "level": 3,
+     "name": "Flood Warning",
+     "value": 4.8
+    }
+   ],
+   "tidal": true,
+   "tide_station": "9414750",
+   "unit": "ft",
+   "url": "https://oneshorelineearlywarning.onerain.com/sensor/?site_id=11&site=fe06588c-e5e6-4016-8a8f-2ba1f040636e&device_id=3&device=e481d107-65bb-4107-89ab-48484eb0e188"
+  },
   "sfq_rain_a08204fe": {
    "creek": "sanfrancisquito",
    "creek_name": "San Francisquito Creek",
@@ -2347,45 +2385,7 @@
    "tide_station": "9414750",
    "unit": "ft",
    "url": "https://waterdata.usgs.gov/monitoring-location/USGS-11162753/"
-  },
-  "stage": {
-   "creek": "sanbruno",
-   "creek_name": "San Bruno Creek",
-   "freq": null,
-   "kind": "stage",
-   "label": "First Avenue",
-   "name": "San Bruno Creek at First Avenue (41102) \u2013 Stage",
-   "number": "41102",
-   "preview": false,
-   "reports": "on change",
-   "role": "stages",
-   "source": "onerain",
-   "source_id": "onerain 41102 site_id=11 device_id=3",
-   "thresholds": [
-    {
-     "color": "#e6c200",
-     "level": 1,
-     "name": "Flood Monitoring",
-     "value": 2.4
-    },
-    {
-     "color": "#e07b00",
-     "level": 2,
-     "name": "Flood Watch",
-     "value": 3.6
-    },
-    {
-     "color": "#c62828",
-     "level": 3,
-     "name": "Flood Warning",
-     "value": 4.8
-    }
-   ],
-   "tidal": true,
-   "tide_station": "9414750",
-   "unit": "ft",
-   "url": "https://oneshorelineearlywarning.onerain.com/sensor/?site_id=11&site=fe06588c-e5e6-4016-8a8f-2ba1f040636e&device_id=3&device=e481d107-65bb-4107-89ab-48484eb0e188"
   }
  },
- "updated": "2026-10-15 10:00:23"
+ "updated": "2026-10-15 17:20:16"
 }

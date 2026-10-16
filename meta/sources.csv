@@ -28,3 +28,4 @@ changed_utc,sensor,creek,kind,unit,source,source_id,label,number,thresholds_hash
 2026-10-15T16:15:12Z,smc_rain_csc,sanmateo,rain_increment,in,onerain,onerain CSC site_id=18 device_id=2,Crystal Springs Cottage,CSC,d09bea4ca0,207257a093,first record
 2026-10-15T16:15:12Z,smc_stage_11162753,sanmateo,stage,ft,usgs,usgs 11162753 00065,Below Crystal Springs Reservoir,USGS 11162753,d09bea4ca0,74234e98af,first record
 2026-10-15T16:15:12Z,stage,sanbruno,stage,ft,onerain,onerain 41102 site_id=11 device_id=3,First Avenue,41102,7838114350,74234e98af,first record
+2026-10-16T00:21:58Z,sb_stage_41102,sanbruno,stage,ft,onerain,onerain 41102 site_id=11 device_id=3,First Avenue,41102,7838114350,74234e98af,first record
