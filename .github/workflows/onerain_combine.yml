@@ -1,0 +1,41 @@
+name: OneRain history (combine only)
+
+# Combines the pieces saved by an earlier "OneRain history (all creeks)" run (kept 7 days), without reading
+# OneRain again. Use it if that run's combine step failed. The run ID is the number at the end of the run's address.
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "Run ID of the 'OneRain history (all creeks)' run (the number in its web address)"
+        required: true
+      name:
+        description: "Name for the download"
+        default: "stage"
+
+permissions:
+  contents: read
+  actions: read                 # to read the other run's saved pieces
+
+jobs:
+  combine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: onerain-piece-*
+          path: pieces
+          merge-multiple: true
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+      - name: Combine
+        run: |
+          python scripts/combine_onerain_history.py pieces combined
+          sed '/## Piece reports/,$d' combined/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: onerain-history-${{ inputs.name }}
+          path: combined/
