@@ -7,7 +7,7 @@ nothing is silently cut off.
 
     python scripts/pull_onerain_history.py --select belmont --start 2022-12-01 --end 2023-01-31 --probe
 
---select  creek ids (belmont) or gauge keys (bel_stage), comma-separated; 'all' = every OneRain gauge
+--select  creek ids (belmont), gauge keys (bel_stage), 'stage' or 'rain' (every gauge of that type), or 'all'
 --probe   also check how far back each sensor's history goes (one request per year)
 
 Output (out/onerain_history/):
@@ -23,6 +23,7 @@ import datetime as dt
 import html as htmllib
 import http.cookiejar
 import io
+import json
 import os
 import re
 import sys
@@ -206,12 +207,19 @@ def main():
     ap.add_argument("--start", default="2022-12-01", help="YYYY-MM-DD, Pacific")
     ap.add_argument("--end", default="2023-01-31", help="YYYY-MM-DD, Pacific, inclusive")
     ap.add_argument("--probe", action="store_true")
+    ap.add_argument("--probe-only", action="store_true", help="only check how far back each gauge goes")
+    ap.add_argument("--list", action="store_true", help="print the matching gauge keys as JSON and stop")
     a = ap.parse_args()
 
     want = {w.strip() for w in a.select.split(",") if w.strip()}
-    gauges = [g for g in read_gauges() if "all" in want or g["creek"] in want or g["gauge"] in want]
+    gauges = [g for g in read_gauges() if "all" in want or g["creek"] in want or g["gauge"] in want
+              or g.get("type", "").lower() in want]          # 'stage' or 'rain' = every gauge of that type
     if not gauges:
         sys.exit(f"No OneRain gauges match {a.select!r}")
+    if a.list:
+        print(json.dumps([g["gauge"] for g in gauges]))
+        return
+    t_start = time.time()
     start = dt.datetime.fromisoformat(a.start)
     end = dt.datetime.fromisoformat(a.end) + dt.timedelta(days=1)
     os.makedirs(OUT, exist_ok=True)
@@ -219,14 +227,19 @@ def main():
     retrieved = dt.datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     for g in gauges:
-        print(f"{g['gauge']} ({g['onerain_number']} {g['type']}): {a.start} to {a.end}")
-        readings, unit = read_range(session, g, start, end, log)
+        print(f"{g['gauge']} ({g['onerain_number']} {g['type']}): {a.start} to {a.end}", flush=True)
+        readings, unit = ({}, "") if a.probe_only else read_range(session, g, start, end, log)
         # to the second, as the page shows it: a rain gauge can log two tips in the same minute
         rows = [{"datetime_utc": u.strftime("%Y-%m-%dT%H:%M:%SZ"), "datetime_local": t.strftime("%Y-%m-%d %H:%M:%S"),
                  "time_flag": f, "value": v, "unit": unit, "source_id":
                  f"onerain {g['onerain_number']} site_id={g['site_id']} device_id={g['device_id']}",
                  "via": "onerain public sensor page", "retrieved_utc": retrieved}
                 for u, (t, v, f) in sorted(readings.items())]
+        if a.probe_only:
+            p = probe(session, g, range(2008, dt.date.today().year + 1))
+            reach.append(f"| {g['gauge']} | " + " | ".join(str(n) for _, n in p) + " |")
+            years = [y for y, _ in p]
+            continue
         with open(os.path.join(OUT, f"{g['gauge']}.csv"), "w", newline="") as f:
             w = csv.DictWriter(f, fieldnames=list(rows[0]) if rows else ["datetime_utc"], lineterminator="\n")
             w.writeheader()
@@ -238,7 +251,7 @@ def main():
                 gaps += 1
         summary.append(f"| {g['gauge']} | {g['type']} | {len(rows)} | {rows[0]['datetime_local'] if rows else '–'} | "
                        f"{rows[-1]['datetime_local'] if rows else '–'} | {unit} | {gaps} |")
-        print(f"  {len(rows)} readings")
+        print(f"  {len(rows)} readings", flush=True)
         if a.probe:
             p = probe(session, g, range(2008, dt.date.today().year + 1))
             reach.append(f"| {g['gauge']} | " + " | ".join(str(n) for _, n in p) + " |")
@@ -246,7 +259,8 @@ def main():
 
     with open(os.path.join(OUT, "report.md"), "w") as f:
         f.write(f"# OneRain history pull\n\nSelection `{a.select}`, {a.start} to {a.end} (Pacific). "
-                f"Read {retrieved} from the public sensor pages; {session.requests} requests.\n\n")
+                f"Read {retrieved} from the public sensor pages; {session.requests} requests in "
+                f"{(time.time() - t_start) / 60:.1f} min ({(time.time() - t_start) / max(1, session.requests):.1f} s each).\n\n")
         f.write("## Readings\n\n| Gauge | Type | Readings | First | Last | Unit | Silences > 13 h |\n|---|---|---|---|---|---|---|\n")
         f.write("\n".join(summary) + "\n\n")
         if reach:
