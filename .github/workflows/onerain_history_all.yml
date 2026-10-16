@@ -1,0 +1,95 @@
+name: OneRain history (all creeks)
+
+# Pulls every OneRain gauge's history from OneRain's public sensor pages (no login, no export), one job per water
+# year, two at a time (polite to OneRain), then combines everything into one download: one file per gauge for the
+# whole period, and report.md (readings per water year, how far back each gauge goes, anything that couldn't be
+# read completely). Nothing is committed to the repo.
+on:
+  workflow_dispatch:
+    inputs:
+      first_wy:
+        description: "First water year (WY2020 = Oct 2019 - Sep 2020)"
+        default: "2020"
+      last_wy:
+        description: "Last water year (WY2027 = Oct 2026 - Sep 2027; stops at today)"
+        default: "2027"
+      select:
+        description: "Creek ids (belmont), gauge keys (bel_stage), or 'all'"
+        default: "all"
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      years: ${{ steps.y.outputs.years }}
+    steps:
+      - id: y
+        env:
+          FIRST: ${{ inputs.first_wy }}
+          LAST: ${{ inputs.last_wy }}
+        run: |
+          python3 - <<'EOF' >> "$GITHUB_OUTPUT"
+          import json, os, re
+          a, b = os.environ["FIRST"].strip(), os.environ["LAST"].strip()
+          assert re.fullmatch(r"20\d\d", a) and re.fullmatch(r"20\d\d", b) and int(a) <= int(b), "water years like 2020"
+          print("years=" + json.dumps([str(y) for y in range(int(b), int(a) - 1, -1)]))   # newest first
+          EOF
+
+  pull:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false          # one slow year doesn't cancel the others
+      max-parallel: 2           # polite to OneRain: two readers at a time
+      matrix:
+        wy: ${{ fromJSON(needs.plan.outputs.years) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Pull water year ${{ matrix.wy }}
+        env:
+          WY: ${{ matrix.wy }}
+          SELECT: ${{ inputs.select }}
+          FIRST: ${{ inputs.first_wy }}
+        run: |
+          START="$((WY - 1))-10-01"
+          END="$(python3 -c "import datetime as d,os; print(min(d.date(int(os.environ['WY']),9,30), d.date.today()))")"
+          EXTRA=""
+          if [ "$WY" = "$FIRST" ]; then EXTRA="--probe"; fi    # how far back each gauge goes: once is enough
+          python scripts/pull_onerain_history.py --select "$SELECT" --start "$START" --end "$END" $EXTRA
+          mkdir -p piece && mv out/onerain_history "piece/wy$WY"
+      - uses: actions/upload-artifact@v4
+        if: always()            # keep whatever was read, even if the job stopped early
+        with:
+          name: onerain-piece-wy${{ matrix.wy }}
+          path: piece/
+          retention-days: 7
+
+  combine:
+    needs: pull
+    if: always()                # combine whatever finished
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: onerain-piece-wy*
+          path: pieces
+          merge-multiple: true
+      - name: Combine
+        run: |
+          python scripts/combine_onerain_history.py pieces combined
+          sed '/## Piece reports/,$d' combined/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: onerain-history-all-creeks
+          path: combined/
