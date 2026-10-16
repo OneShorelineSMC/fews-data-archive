@@ -20,7 +20,7 @@ from collections import defaultdict
 def main():
     src, out = sys.argv[1], sys.argv[2]
     os.makedirs(out, exist_ok=True)
-    by_gauge, reports, cols = defaultdict(dict), [], None
+    by_gauge, reports, cols, seen = defaultdict(dict), [], None, set()
     for piece in sorted(os.listdir(src)):
         d = os.path.join(src, piece)
         if not os.path.isdir(d):
@@ -30,9 +30,11 @@ def main():
             if fn == "report.md":
                 reports.append((piece, open(p).read()))
             elif fn.endswith(".csv"):
+                seen.add(fn[:-4])
                 with open(p, newline="") as f:
                     r = csv.DictReader(f)
-                    cols = cols or r.fieldnames
+                    if r.fieldnames and len(r.fieldnames) > len(cols or []):
+                        cols = r.fieldnames   # a gauge with no readings in a piece has a header-only file
                     for row in r:
                         if row.get("datetime_utc"):
                             by_gauge[fn[:-4]].setdefault((row["datetime_utc"], row["value"]), row)
@@ -64,6 +66,9 @@ def main():
                 + " | ".join(f"WY{y}" for y in years) + " |\n|---|---|---|---|" + "---|" * len(years) + "\n")
         for g, n, a, b, w in summary:
             f.write(f"| {g} | {n} | {a} | {b} | " + " | ".join(str(w.get(y, 0)) for y in years) + " |\n")
+        empty = sorted(seen - set(by_gauge))
+        if empty:
+            f.write("\nNo readings at all in this period: " + ", ".join(empty) + "\n")
         f.write("\n## Problems\n\n")
         f.write(("Pieces that could not be read completely:\n\n" + "\n".join(f"- {x}" for x in incomplete) + "\n\n")
                 if incomplete else "No incomplete pieces.\n\n")
