@@ -1,21 +1,27 @@
 name: OneRain history (all creeks)
 
-# Pulls every OneRain gauge's history from OneRain's public sensor pages (no login, no export), one job per water
-# year, two at a time (polite to OneRain), then combines everything into one download: one file per gauge for the
-# whole period, and report.md (readings per water year, how far back each gauge goes, anything that couldn't be
-# read completely). Nothing is committed to the repo.
+# Pulls OneRain gauge history from OneRain's public sensor pages (no login, no export) and combines it into one
+# download: one file per gauge for the whole period, plus report.md (readings per water year, how far back each
+# gauge goes, anything that couldn't be read completely). Nothing is committed to the repo.
+#
+# OneRain's pages are slow (about 16 minutes per gauge per water year), so the work is split into one small job per
+# gauge per water year, a few at a time. Start with 'stage' (creek levels, 7 gauges, about 4 hours); run 'rain'
+# (14 gauges) another night if needed.
 on:
   workflow_dispatch:
     inputs:
+      select:
+        description: "'stage', 'rain', 'all', creek ids (belmont) or gauge keys (bel_stage)"
+        default: "stage"
       first_wy:
         description: "First water year (WY2020 = Oct 2019 - Sep 2020)"
         default: "2020"
       last_wy:
         description: "Last water year (WY2027 = Oct 2026 - Sep 2027; stops at today)"
         default: "2027"
-      select:
-        description: "Creek ids (belmont), gauge keys (bel_stage), or 'all'"
-        default: "all"
+      at_once:
+        description: "Jobs reading OneRain at the same time (keep it small to be polite)"
+        default: "4"
 
 permissions:
   contents: read
@@ -24,55 +30,82 @@ jobs:
   plan:
     runs-on: ubuntu-latest
     outputs:
-      years: ${{ steps.y.outputs.years }}
+      gauges: ${{ steps.p.outputs.gauges }}
+      years: ${{ steps.p.outputs.years }}
+      at_once: ${{ steps.p.outputs.at_once }}
     steps:
-      - id: y
+      - uses: actions/checkout@v4
+      - id: p
         env:
+          SELECT: ${{ inputs.select }}
           FIRST: ${{ inputs.first_wy }}
           LAST: ${{ inputs.last_wy }}
+          AT_ONCE: ${{ inputs.at_once }}
         run: |
+          echo "gauges=$(python3 scripts/pull_onerain_history.py --select "$SELECT" --list)" >> "$GITHUB_OUTPUT"
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
           import json, os, re
-          a, b = os.environ["FIRST"].strip(), os.environ["LAST"].strip()
+          a, b, n = os.environ["FIRST"].strip(), os.environ["LAST"].strip(), os.environ["AT_ONCE"].strip()
           assert re.fullmatch(r"20\d\d", a) and re.fullmatch(r"20\d\d", b) and int(a) <= int(b), "water years like 2020"
+          assert n.isdigit() and 1 <= int(n) <= 6, "at_once: 1 to 6"
           print("years=" + json.dumps([str(y) for y in range(int(b), int(a) - 1, -1)]))   # newest first
+          print("at_once=" + n)
           EOF
 
-  pull:
+  probe:                        # how far back each gauge goes (one request per gauge per year)
     needs: plan
     runs-on: ubuntu-latest
-    timeout-minutes: 180
-    strategy:
-      fail-fast: false          # one slow year doesn't cancel the others
-      max-parallel: 2           # polite to OneRain: two readers at a time
-      matrix:
-        wy: ${{ fromJSON(needs.plan.outputs.years) }}
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Pull water year ${{ matrix.wy }}
+      - env:
+          SELECT: ${{ inputs.select }}
+        run: |
+          python scripts/pull_onerain_history.py --select "$SELECT" --probe-only
+          mkdir -p piece && mv out/onerain_history piece/probe
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: onerain-piece-probe
+          path: piece/
+          retention-days: 7
+
+  pull:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false          # one slow piece doesn't cancel the others
+      max-parallel: ${{ fromJSON(needs.plan.outputs.at_once) }}
+      matrix:
+        wy: ${{ fromJSON(needs.plan.outputs.years) }}
+        gauge: ${{ fromJSON(needs.plan.outputs.gauges) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Pull ${{ matrix.gauge }}, water year ${{ matrix.wy }}
         env:
           WY: ${{ matrix.wy }}
-          SELECT: ${{ inputs.select }}
-          FIRST: ${{ inputs.first_wy }}
+          GAUGE: ${{ matrix.gauge }}
         run: |
           START="$((WY - 1))-10-01"
           END="$(python3 -c "import datetime as d,os; print(min(d.date(int(os.environ['WY']),9,30), d.date.today()))")"
-          EXTRA=""
-          if [ "$WY" = "$FIRST" ]; then EXTRA="--probe"; fi    # how far back each gauge goes: once is enough
-          python scripts/pull_onerain_history.py --select "$SELECT" --start "$START" --end "$END" $EXTRA
-          mkdir -p piece && mv out/onerain_history "piece/wy$WY"
+          python scripts/pull_onerain_history.py --select "$GAUGE" --start "$START" --end "$END"
+          mkdir -p piece && mv out/onerain_history "piece/$GAUGE-wy$WY"
       - uses: actions/upload-artifact@v4
-        if: always()            # keep whatever was read, even if the job stopped early
+        if: always()            # keep whatever was read
         with:
-          name: onerain-piece-wy${{ matrix.wy }}
+          name: onerain-piece-${{ matrix.gauge }}-wy${{ matrix.wy }}
           path: piece/
           retention-days: 7
 
   combine:
-    needs: pull
+    needs: [pull, probe]
     if: always()                # combine whatever finished
     runs-on: ubuntu-latest
     steps:
@@ -82,7 +115,7 @@ jobs:
           python-version: "3.12"
       - uses: actions/download-artifact@v4
         with:
-          pattern: onerain-piece-wy*
+          pattern: onerain-piece-*
           path: pieces
           merge-multiple: true
       - name: Combine
@@ -91,5 +124,5 @@ jobs:
           sed '/## Piece reports/,$d' combined/report.md >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         with:
-          name: onerain-history-all-creeks
+          name: onerain-history-${{ inputs.select }}
           path: combined/
