@@ -11,7 +11,7 @@ nothing is silently cut off.
 --probe   also check how far back each sensor's history goes (one request per year)
 
 Output (out/onerain_history/):
-  <gauge>.csv  datetime_utc, datetime_local, time_flag, value (exactly as shown on the page), unit
+  <gauge>.csv  datetime_utc, datetime_local (to the second), time_flag, value (exactly as shown on the page), unit
   report.md    what was read: pages, readings, any pieces that couldn't be read completely, history reach
 
 Gauge IDs come from the live site's lookups/creek_gauges.csv.
@@ -221,7 +221,8 @@ def main():
     for g in gauges:
         print(f"{g['gauge']} ({g['onerain_number']} {g['type']}): {a.start} to {a.end}")
         readings, unit = read_range(session, g, start, end, log)
-        rows = [{"datetime_utc": u.strftime("%Y-%m-%dT%H:%MZ"), "datetime_local": t.strftime("%Y-%m-%d %H:%M"),
+        # to the second, as the page shows it: a rain gauge can log two tips in the same minute
+        rows = [{"datetime_utc": u.strftime("%Y-%m-%dT%H:%M:%SZ"), "datetime_local": t.strftime("%Y-%m-%d %H:%M:%S"),
                  "time_flag": f, "value": v, "unit": unit, "source_id":
                  f"onerain {g['onerain_number']} site_id={g['site_id']} device_id={g['device_id']}",
                  "via": "onerain public sensor page", "retrieved_utc": retrieved}
@@ -232,8 +233,8 @@ def main():
             w.writerows(rows)
         gaps = 0
         for x, y in zip(rows, rows[1:]):
-            if (dt.datetime.strptime(y["datetime_utc"], "%Y-%m-%dT%H:%MZ")
-                    - dt.datetime.strptime(x["datetime_utc"], "%Y-%m-%dT%H:%MZ")) > dt.timedelta(hours=13):
+            if (dt.datetime.strptime(y["datetime_utc"][:19], "%Y-%m-%dT%H:%M:%S")
+                    - dt.datetime.strptime(x["datetime_utc"][:19], "%Y-%m-%dT%H:%M:%S")) > dt.timedelta(hours=13):
                 gaps += 1
         summary.append(f"| {g['gauge']} | {g['type']} | {len(rows)} | {rows[0]['datetime_local'] if rows else '–'} | "
                        f"{rows[-1]['datetime_local'] if rows else '–'} | {unit} | {gaps} |")
