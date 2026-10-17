@@ -1,0 +1,37 @@
+name: NOAA tide history
+
+# Pulls NOAA's measured water level and tide table (hourly, ft NAVD88) for a date range, for storm checks such as
+# "does Colma Creek back up at high tide?". Download the result from the run's Artifacts. Nothing is committed.
+on:
+  workflow_dispatch:
+    inputs:
+      stations:
+        description: "NOAA station numbers, comma-separated (9414750 Alameda, 9414290 San Francisco, 9414523 Redwood City)"
+        default: "9414750,9414290"
+      start:
+        description: "First day (YYYY-MM-DD)"
+        default: "2021-10-01"
+      end:
+        description: "Last day (YYYY-MM-DD)"
+        default: "2026-06-30"
+
+permissions:
+  contents: read
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Pull
+        run: |
+          python scripts/pull_noaa_tides.py --stations "${{ inputs.stations }}" --start "${{ inputs.start }}" --end "${{ inputs.end }}" --out tides
+          cat tides/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: noaa-tide-history
+          path: tides/
