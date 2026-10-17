@@ -743,7 +743,7 @@
      "value": 6.75
     }
    ],
-   "tidal": false,
+   "tidal": true,
    "tide_station": "9414750",
    "unit": "ft",
    "url": "https://oneshorelineearlywarning.onerain.com/sensor/?site_id=12&site=32e8ebb1-4c9c-460a-a4cd-58903b96f347&device_id=5&device=dbbbcf6d-6a38-44a5-a90b-7077db13c5c2"
@@ -2387,5 +2387,5 @@
    "url": "https://waterdata.usgs.gov/monitoring-location/USGS-11162753/"
   }
  },
- "updated": "2026-10-16 17:20:14"
+ "updated": "2026-10-17 06:40:16"
 }
