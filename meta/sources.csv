@@ -29,3 +29,8 @@ changed_utc,sensor,creek,kind,unit,source,source_id,label,number,thresholds_hash
 2026-10-15T16:15:12Z,smc_stage_11162753,sanmateo,stage,ft,usgs,usgs 11162753 00065,Below Crystal Springs Reservoir,USGS 11162753,d09bea4ca0,74234e98af,first record
 2026-10-15T16:15:12Z,stage,sanbruno,stage,ft,onerain,onerain 41102 site_id=11 device_id=3,First Avenue,41102,7838114350,74234e98af,first record
 2026-10-16T00:21:58Z,sb_stage_41102,sanbruno,stage,ft,onerain,onerain 41102 site_id=11 device_id=3,First Avenue,41102,7838114350,74234e98af,first record
+2026-10-18T00:00:24Z,pes_stage_11162500,pescadero,stage,ft,usgs,usgs 11162500 00065,Near Pescadero,USGS 11162500,1d335dbcc9,74234e98af,changed: thresholds_hash
+2026-10-18T00:00:24Z,pil_stage_11162630,pilarcitos,stage,ft,usgs,usgs 11162630 00065,Half Moon Bay,USGS 11162630,f5bddc58c6,74234e98af,changed: thresholds_hash
+2026-10-18T00:00:24Z,sfq_stage_11164500,sanfrancisquito,stage,ft,usgs,usgs 11164500 00065,Stanford,USGS 11164500,4a05c66e52,74234e98af,changed: thresholds_hash
+2026-10-18T00:00:24Z,sg_stage_11162570,sangregorio,stage,ft,usgs,usgs 11162570 00065,San Gregorio,USGS 11162570,759f3b275e,74234e98af,changed: thresholds_hash
+2026-10-18T00:00:24Z,smc_stage_11162753,sanmateo,stage,ft,usgs,usgs 11162753 00065,Below Crystal Springs Reservoir,USGS 11162753,ad0e7ebee7,74234e98af,changed: thresholds_hash

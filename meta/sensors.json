@@ -1062,7 +1062,22 @@
    "role": "stages",
    "source": "usgs",
    "source_id": "usgs 11162500 00065",
-   "thresholds": [],
+   "thresholds": [
+    {
+     "color": "#e07b00",
+     "level": 2,
+     "name": "Flood Watch",
+     "note": "OneRain: Flooding likely",
+     "value": 11.2
+    },
+    {
+     "color": "#c62828",
+     "level": 3,
+     "name": "Flood Warning",
+     "note": "OneRain: Projected flooding in downstream reaches",
+     "value": 13.25
+    }
+   ],
    "tidal": false,
    "tide_station": null,
    "unit": "ft",
@@ -1298,7 +1313,36 @@
    "role": "stages",
    "source": "usgs",
    "source_id": "usgs 11162630 00065",
-   "thresholds": [],
+   "thresholds": [
+    {
+     "color": "#e6c200",
+     "level": 1,
+     "name": "Flood Monitoring",
+     "note": "OneRain: Potential flooding",
+     "value": 7.5
+    },
+    {
+     "color": "#e07b00",
+     "level": 2,
+     "name": "Flood Watch",
+     "note": "OneRain: Flooding probable with continued rain",
+     "value": 9.1
+    },
+    {
+     "color": "#c62828",
+     "level": 3,
+     "name": "Flood Warning",
+     "note": "OneRain: Flooding likely in downstream reaches",
+     "value": 17.0
+    },
+    {
+     "color": "#9c27b0",
+     "level": 4,
+     "name": "Major Flood Stage",
+     "note": "OneRain: Damaging flooding",
+     "value": 24.0
+    }
+   ],
    "tidal": false,
    "tide_station": null,
    "unit": "ft",
@@ -2060,7 +2104,29 @@
    "role": "stages",
    "source": "usgs",
    "source_id": "usgs 11164500 00065",
-   "thresholds": [],
+   "thresholds": [
+    {
+     "color": "#e6c200",
+     "level": 1,
+     "name": "Flood Monitoring",
+     "note": "OneRain: Potential flooding",
+     "value": 11.0
+    },
+    {
+     "color": "#e07b00",
+     "level": 2,
+     "name": "Flood Watch",
+     "note": "OneRain: Flooding likely",
+     "value": 12.0
+    },
+    {
+     "color": "#c62828",
+     "level": 3,
+     "name": "Flood Warning",
+     "note": "OneRain: Projected flooding in downstream reaches",
+     "value": 12.8
+    }
+   ],
    "tidal": false,
    "tide_station": "9414523",
    "unit": "ft",
@@ -2220,7 +2286,36 @@
    "role": "stages",
    "source": "usgs",
    "source_id": "usgs 11162570 00065",
-   "thresholds": [],
+   "thresholds": [
+    {
+     "color": "#e6c200",
+     "level": 1,
+     "name": "Flood Monitoring",
+     "note": "OneRain: Potential flooding",
+     "value": 15.0
+    },
+    {
+     "color": "#e07b00",
+     "level": 2,
+     "name": "Flood Watch",
+     "note": "OneRain: Flooding probable with continued rain",
+     "value": 17.7
+    },
+    {
+     "color": "#c62828",
+     "level": 3,
+     "name": "Flood Warning",
+     "note": "OneRain: Flooding likely in downstream reaches",
+     "value": 21.0
+    },
+    {
+     "color": "#9c27b0",
+     "level": 4,
+     "name": "Major Flood Stage",
+     "note": "OneRain: Damaging flooding",
+     "value": 25.0
+    }
+   ],
    "tidal": false,
    "tide_station": null,
    "unit": "ft",
@@ -2380,12 +2475,27 @@
    "role": "stages",
    "source": "usgs",
    "source_id": "usgs 11162753 00065",
-   "thresholds": [],
+   "thresholds": [
+    {
+     "color": "#e07b00",
+     "level": 2,
+     "name": "Flood Watch",
+     "note": "OneRain: Flooding probable with continued rain. OneRain sets it as 200 cfs flow; 6.70 ft is the matching USGS gauge height (2023-2026 readings)",
+     "value": 6.7
+    },
+    {
+     "color": "#c62828",
+     "level": 3,
+     "name": "Flood Warning",
+     "note": "OneRain: Active flooding likely to occur downstream. OneRain sets it as 250 cfs flow; 7.00 ft is the matching USGS gauge height (2023-2026 readings)",
+     "value": 7.0
+    }
+   ],
    "tidal": false,
    "tide_station": "9414750",
    "unit": "ft",
    "url": "https://waterdata.usgs.gov/monitoring-location/USGS-11162753/"
   }
  },
- "updated": "2026-10-17 06:40:16"
+ "updated": "2026-10-17 16:55:13"
 }
