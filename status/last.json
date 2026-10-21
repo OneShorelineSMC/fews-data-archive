@@ -13,6 +13,13 @@
   "status": "none",
   "trigger": ""
  },
+ "butano": {
+  "level": 0,
+  "rain_level": 0,
+  "rising_fast": "no",
+  "status": "none",
+  "trigger": ""
+ },
  "colma": {
   "level": 0,
   "rain_level": 0,
