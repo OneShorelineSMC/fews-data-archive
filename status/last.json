@@ -10,7 +10,7 @@
   "level": 0,
   "rain_level": 0,
   "rising_fast": "no",
-  "status": "none",
+  "status": "offline",
   "trigger": ""
  },
  "butano": {
