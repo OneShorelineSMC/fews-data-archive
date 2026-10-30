@@ -36,7 +36,8 @@
      "color": "#9c27b0",
      "level": 4,
      "name": "Roadway Flooded",
-     "note": "Water detected on road",
+     "note": "Spill elevation, in the same datum as the gauge (OneShoreline, Oct 29, 2026): water spills onto the road",
+     "public_note": "Water is spilling onto the road at Alameda de las Pulgas (spill elevation 10.40 ft).",
      "value": 10.4
     }
    ],
@@ -2691,5 +2692,5 @@
    "url": "https://waterdata.usgs.gov/monitoring-location/USGS-11162753/"
   }
  },
- "updated": "2026-10-29 09:50:19"
+ "updated": "2026-10-29 18:50:15"
 }

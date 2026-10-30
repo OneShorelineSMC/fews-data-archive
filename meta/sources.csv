@@ -37,3 +37,4 @@ changed_utc,sensor,creek,kind,unit,source,source_id,label,number,thresholds_hash
 2026-10-22T00:40:11Z,but_rain_41152,butano,rain_increment,in,onerain,onerain 41152 site_id=29 device_id=9,Cloverdale Road,41152,d09bea4ca0,59c8b54491,first record
 2026-10-22T00:40:11Z,but_stage_11162540,butano,stage,ft,usgs,usgs 11162540 00065,Near Pescadero (USGS),USGS 11162540,d09bea4ca0,74234e98af,first record
 2026-10-22T00:40:11Z,but_stage_41152,butano,stage,ft,onerain,onerain 41152 site_id=29 device_id=7,Cloverdale Road,41152,4bbcce7cba,74234e98af,first record
+2026-10-30T01:55:49Z,ath_alameda,atherton,stage,ft,onerain,onerain 41107 site_id=48 device_id=5,Alameda de las Pulgas,41107,7925c49836,74234e98af,changed: thresholds_hash
