@@ -1,3 +1,4 @@
 datetime_local,creek,preview,status,level,level_name,trigger,rain_level,rain_driver,rising_fast,trend_ft_per_hr,tide,reasons,staff_notes,changed,code_version
 2026-11-04 19:00,greenhills,yes,offline,0,,,0,,no,,,,only one working rain gauge,status,2cf17adcde
 2026-11-05 02:50,greenhills,yes,none,0,,,0,,no,0.0,,,only one working rain gauge,status,5c76e410ef
+2026-11-06 04:40,sangregorio,yes,offline,0,,,0,,no,,,,only one working rain gauge,status,7b52dc9d33
