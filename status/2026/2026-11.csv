@@ -4,3 +4,4 @@ datetime_local,creek,preview,status,level,level_name,trigger,rain_level,rain_dri
 2026-11-06 04:40,sangregorio,yes,offline,0,,,0,,no,,,,only one working rain gauge,status,7b52dc9d33
 2026-11-06 11:40,sangregorio,yes,none,0,,,0,,no,0.0,,,only one working rain gauge,status,3dcd549759
 2026-11-06 20:20,colma,no,offline,0,,,0,,no,,"{""ft"":4.53,""source"":""measured"",""rising"":true,""next_high"":""2026-11-06 22:26"",""next_high_ft"":5.19,""high_soon"":true}",,,status,a8d51eb547
+2026-11-07 03:10,colma,no,none,0,,,0,,no,0.0,"{""ft"":2.64,""source"":""measured"",""rising"":false,""next_high"":""2026-11-07 10:08"",""next_high_ft"":6.68,""high_soon"":false}",,only one working rain gauge,status,7abb239276
