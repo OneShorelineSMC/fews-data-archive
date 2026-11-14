@@ -10,8 +10,8 @@
   "level": 0,
   "rain_level": 0,
   "rising_fast": "no",
-  "status": "likely",
-  "trigger": "Flooding likely (rain + tide)"
+  "status": "offline",
+  "trigger": ""
  },
  "butano": {
   "level": 0,
@@ -44,15 +44,15 @@
  "pilarcitos": {
   "level": 0,
   "rain_level": 0,
-  "rising_fast": "yes",
-  "status": "alert",
+  "rising_fast": "no",
+  "status": "none",
   "trigger": ""
  },
  "sanbruno": {
   "level": 0,
-  "rain_level": 2,
+  "rain_level": 1,
   "rising_fast": "no",
-  "status": "alert",
+  "status": "none",
   "trigger": ""
  },
  "sanfrancisquito": {
