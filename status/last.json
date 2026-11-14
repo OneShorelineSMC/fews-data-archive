@@ -50,9 +50,9 @@
  },
  "sanbruno": {
   "level": 0,
-  "rain_level": 1,
+  "rain_level": 0,
   "rising_fast": "no",
-  "status": "alert",
+  "status": "none",
   "trigger": ""
  },
  "sanfrancisquito": {
