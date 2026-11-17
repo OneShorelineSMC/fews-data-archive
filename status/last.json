@@ -2,8 +2,8 @@
  "atherton": {
   "level": 0,
   "rain_level": 0,
-  "rising_fast": "yes",
-  "status": "alert",
+  "rising_fast": "no",
+  "status": "none",
   "trigger": ""
  },
  "belmont": {
