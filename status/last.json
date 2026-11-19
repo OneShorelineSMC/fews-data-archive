@@ -10,7 +10,7 @@
   "level": 0,
   "rain_level": 1,
   "rising_fast": "no",
-  "status": "offline",
+  "status": "none",
   "trigger": ""
  },
  "butano": {
@@ -29,44 +29,44 @@
  },
  "greenhills": {
   "level": 0,
-  "rain_level": 0,
+  "rain_level": 1,
   "rising_fast": "no",
   "status": "none",
   "trigger": ""
  },
  "pescadero": {
   "level": 0,
-  "rain_level": 2,
+  "rain_level": 1,
   "rising_fast": "no",
-  "status": "alert",
+  "status": "none",
   "trigger": ""
  },
  "pilarcitos": {
   "level": 0,
-  "rain_level": 0,
+  "rain_level": 1,
   "rising_fast": "no",
   "status": "none",
   "trigger": ""
  },
  "sanbruno": {
-  "level": 0,
-  "rain_level": 2,
+  "level": 1,
+  "rain_level": 3,
   "rising_fast": "no",
   "status": "alert",
   "trigger": ""
  },
  "sanfrancisquito": {
   "level": 0,
-  "rain_level": 2,
+  "rain_level": 0,
   "rising_fast": "no",
-  "status": "alert",
+  "status": "none",
   "trigger": ""
  },
  "sangregorio": {
   "level": 0,
-  "rain_level": 2,
+  "rain_level": 1,
   "rising_fast": "no",
-  "status": "alert",
+  "status": "none",
   "trigger": ""
  },
  "sanmateo": {
