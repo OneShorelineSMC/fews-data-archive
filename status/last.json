@@ -1,7 +1,7 @@
 {
  "atherton": {
   "level": 0,
-  "rain_level": 0,
+  "rain_level": 1,
   "rising_fast": "no",
   "status": "none",
   "trigger": ""
@@ -10,7 +10,7 @@
   "level": 0,
   "rain_level": 1,
   "rising_fast": "no",
-  "status": "offline",
+  "status": "none",
   "trigger": ""
  },
  "butano": {
