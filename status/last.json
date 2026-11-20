@@ -1,7 +1,7 @@
 {
  "atherton": {
   "level": 0,
-  "rain_level": 1,
+  "rain_level": 0,
   "rising_fast": "no",
   "status": "none",
   "trigger": ""
@@ -52,7 +52,7 @@
   "level": 0,
   "rain_level": 3,
   "rising_fast": "no",
-  "status": "none",
+  "status": "alert",
   "trigger": ""
  },
  "sanfrancisquito": {
