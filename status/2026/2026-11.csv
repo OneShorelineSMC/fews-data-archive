@@ -46,3 +46,10 @@ datetime_local,creek,preview,status,level,level_name,trigger,rain_level,rain_dri
 2026-11-19 16:45,atherton,no,none,0,,,1,"{""minutes"":2880,""inches"":2.08,""storm_years"":1.1,""gauge"":""ath_rain"",""label"":""Caltrain""}",no,-0.01,,,only one working rain gauge; rain stopped 60+ min ago and the creek isn't rising: rain no longer raises the status,rain_level,16bf7ee940
 2026-11-20 08:53,sanbruno,no,alert,0,,,3,"{""minutes"":2880,""inches"":4.0,""storm_years"":6.2,""gauge"":""rain_first_ave"",""label"":""First Avenue""}",no,0.0,"{""ft"":7.13,""source"":""measured"",""rising"":false,""next_high"":""2026-11-20 20:57"",""next_high_ft"":4.66,""high_soon"":false}","{'code': 'why_normal_rain', 'rain': 3}",only one working rain gauge,status,12376fe0bb
 2026-11-20 08:53,atherton,no,none,0,,,0,,no,-0.19,,,only one working rain gauge,rain_level,12376fe0bb
+2026-11-20 14:55,sanbruno,no,none,0,,,0,,no,-0.16,"{""ft"":1.52,""source"":""measured"",""rising"":true,""next_high"":""2026-11-20 20:57"",""next_high_ft"":4.66,""high_soon"":false}",,only one working rain gauge,"status, rain_level",bdcd6586af
+2026-11-20 14:55,belmont,no,none,0,,,0,,no,0.0,,,only one working rain gauge,rain_level,bdcd6586af
+2026-11-20 14:55,sanmateo,yes,none,0,,,0,,no,0.0,,,only one working rain gauge,rain_level,bdcd6586af
+2026-11-20 14:55,greenhills,yes,none,0,,,0,,no,0.0,,,only one working rain gauge,rain_level,bdcd6586af
+2026-11-20 14:55,pilarcitos,yes,none,0,,,0,,no,0.0,,,only one working rain gauge,rain_level,bdcd6586af
+2026-11-20 14:55,sangregorio,yes,none,0,,,0,,no,0.04,,,only one working rain gauge,rain_level,bdcd6586af
+2026-11-20 14:55,pescadero,yes,none,0,,,0,,no,0.0,,,only one working rain gauge,rain_level,bdcd6586af
