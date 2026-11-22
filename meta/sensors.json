@@ -2520,7 +2520,7 @@
    "source_id": "onerain CSC site_id=18 device_id=2",
    "thresholds": [],
    "tidal": null,
-   "tide_station": "9414750",
+   "tide_station": "9414523",
    "unit": "in",
    "url": "https://oneshorelineearlywarning.onerain.com/sensor/?site_id=18&site=5b7bf1e3-ca03-4a7a-ae43-8e7c8741c190&device_id=2&device=1ae83ca1-9060-4ff5-94f4-7e510210ba8f"
   },
@@ -2554,10 +2554,10 @@
     }
    ],
    "tidal": false,
-   "tide_station": "9414750",
+   "tide_station": "9414523",
    "unit": "ft",
    "url": "https://waterdata.usgs.gov/monitoring-location/USGS-11162753/"
   }
  },
- "updated": "2026-11-21 18:10:15"
+ "updated": "2026-11-22 09:45:15"
 }
