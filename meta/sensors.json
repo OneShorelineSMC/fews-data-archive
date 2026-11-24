@@ -1543,6 +1543,14 @@
    "unit": "ft",
    "url": "https://waterdata.usgs.gov/monitoring-location/USGS-11162630/"
   },
+  "pul_rain": {
+   "freq": null,
+   "kind": "rain_increment",
+   "name": "Pulgas (PUL) \u2013 Rain",
+   "source": "onerain",
+   "source_id": "onerain",
+   "unit": "in"
+  },
   "rain_first_ave": {
    "creek": "sanbruno",
    "creek_name": "San Bruno Creek",
@@ -2559,5 +2567,5 @@
    "url": "https://waterdata.usgs.gov/monitoring-location/USGS-11162753/"
   }
  },
- "updated": "2026-11-23 21:55:14"
+ "updated": "2026-11-24 12:38:18"
 }
