@@ -1692,14 +1692,6 @@
    "unit": "in",
    "url": "https://oneshorelineearlywarning.onerain.com/sensor/?site_id=11&site=fe06588c-e5e6-4016-8a8f-2ba1f040636e&device_id=5&device=410fdb23-37d0-43aa-8a67-616e08323774"
   },
-  "rain_mountain": {
-   "freq": null,
-   "kind": "rain_increment",
-   "name": "San Bruno Mountain (41200) \u2013 Rain",
-   "source": "onerain",
-   "source_id": "onerain",
-   "unit": "in"
-  },
   "sb_stage_41102": {
    "creek": "sanbruno",
    "creek_name": "San Bruno Creek",
@@ -2567,5 +2559,5 @@
    "url": "https://waterdata.usgs.gov/monitoring-location/USGS-11162753/"
   }
  },
- "updated": "2026-11-24 12:38:18"
+ "updated": "2026-11-24 20:50:15"
 }
